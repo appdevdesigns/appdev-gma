@@ -1,0 +1,34 @@
+{
+  "name": "appdev-gma",
+  "version": "0.0.0",
+  "description": "(plugin) A set of client and server resources for working with our Global Measurements Application (GMA).",
+  "main": "module.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test",
+    "postinstall": "node setup/setup.js",
+    "postupdate": "node setup/setup.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/appdevdesigns/appdev-gma.git"
+  },
+  "author": "Johnny Hausman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/appdevdesigns/appdev-gma/issues"
+  },
+  "homepage": "https://github.com/appdevdesigns/appdev-gma",
+  "dependencies": {
+    "ad-utils": "git://github.com/appdevdesigns/ad-utils",
+    "gma-api": "git://github.com/appdevdesigns/gma-api"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.4",
+    "mocha-phantomjs": "^3.5.0",
+    "phantomjs": "^1.9.7-15"
+  }
+}
