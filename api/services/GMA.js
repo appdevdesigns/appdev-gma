@@ -436,12 +436,49 @@ module.exports= {
                             })
                             
                         }
-                            
 
                         // else return error
 
+                },
+                
+                
+                // step 4: get LMI placements for measurements
+                function(next) {
+                    // Skip this step if GMAMatrix placement model is not loaded
+                    if (typeof Placement == 'undefined') next();
+                
+                    // Create a flat hash of measurement object references
+                    // for finalResults.
+                    var measurements = {};
+                    var IDs = [];
+                    for (var strategy in finalResults) {
+                        for (var i=0; i<finalResults[strategy].length; i++) {
+                            var m = finalResults[strategy][i];
+                            measurements[ m.id() ] = m;
+                            IDs.push( m.id() );
+                        }
+                    }
+                    
+                    // Look up the GMAMatrix LMI placements and package them
+                    // into the final results.
+                    Placement.find({ measurement_id: IDs })
+                    .then(function(list){
+                        for (var i=0; i<list.length; i++) {
+                            var placement = list[i];
+                            var id = placement.measurement_id;
+                            // Adding the LMI data here will also affect the
+                            // measurement objects in `finalResults`
+                            measurements[ measurementID ].data.lmi = placement.location;
+                        }
+                        next();
+                    })
+                    .fail(function(err){
+                        next(err);
+                    })
+                    .done();
+                    
                 }
-
+            
             ], function(err, results){
 
                 if (err) {
