@@ -8,7 +8,6 @@ var path = require('path');
 //-----------------------------------------------------------------------------
 var AD = require('ad-utils');       // reusable AD utilities (log, sal, etc...)
 var gmaAPI = require('gma-api');    // the gma-api communications library 
-var casService = null;              // the /api/services/CAS.js library
 var adCore = null;                  // the base appdev resources libaray
 
 
@@ -28,7 +27,6 @@ module.exports= {
          */
         _init:function() {
             AD.log('... <green><bold>GMA._init()</bold></green>');
-            casService = CAS;   // now available
             adCore = ADCore;    
         },
 
@@ -42,10 +40,6 @@ module.exports= {
          */
         ____mockObjects:function(opt) {
 
-
-            if (opt.casService) {
-                casService = opt.casService;
-            }
 
             if (opt.gmaAPI) {
                 gmaAPI = opt.gmaAPI;
@@ -73,7 +67,6 @@ module.exports= {
 
 
             return {
-                casService:casService,
                 gmaAPI:gmaAPI,
                 AD:AD,
                 cachedConnections:cachedConnections
@@ -87,11 +80,10 @@ module.exports= {
         /**
          *  @function _authenticateProxy
          *
-         *  Authenticate the current user using proxy authentication.
-         *
+         *  Begin a GMA session on behalf of the current CAS user.
          *  
-         *
-         *  @return {object} a gma-api instance. 
+         *  @return Deferred
+         *      Resolves with a gma-api instance. 
          */
         _authenticateProxy:function( options ) {
             var dfd = AD.sal.Deferred();
@@ -126,7 +118,7 @@ module.exports= {
             // once we start caching connections
             // look for a cached connection for this user 
             // if found, then return that one
-            var userGUID = ADCore.user.current(req).GUID();
+            var userGUID = req.user.GUID();
             if (cachedConnections[userGUID]) {
                 dfd.resolve(cachedConnections[userGUID]);
                 return dfd;
@@ -143,7 +135,7 @@ module.exports= {
             });
 
             AD.log('... getting CAS proxyTicket:');
-            casService.getProxyTicket(req, gma.gmaHome)
+            req.AD.getProxyTicket(gma.gmaHome)
             .fail(function(err){
                     AD.log.error(' error getting proxy ticket:', err);
                     err.service_message = 'error getting proxy ticket';
