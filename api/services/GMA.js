@@ -26,7 +26,7 @@ module.exports= {
          *  variables that are not available when this file is initially read.
          */
         _init:function() {
-            AD.log('... <green><bold>GMA._init()</bold></green>');
+            sails.log.info('GMA._init()');
             adCore = ADCore;    
         },
 
@@ -134,20 +134,20 @@ module.exports= {
                 log: AD.log
             });
 
-            AD.log('... getting CAS proxyTicket:');
+            sails.log.info('... getting CAS proxyTicket:');
             req.AD.getProxyTicket(gma.gmaHome)
             .fail(function(err){
-                    AD.log.error(' error getting proxy ticket:', err);
+                    ADCore.error.log(' error getting proxy ticket:', err);
                     err.service_message = 'error getting proxy ticket';
                     dfd.reject(err);
             })
             .done(function(ticket) {
 
-                AD.log('... ticket:'+ticket);
+                sails.log.info('... ticket:'+ticket);
 
                 gma.loginWithTicket(ticket)
                 .fail(function(err){
-                    AD.log.error(' error logging in using ticket:', err);
+                    ADCore.error.log(' error logging in using ticket:', err);
                     err.service_message = 'error logging into gma using ticket:'+ticket;
                     dfd.reject(err);
                 })
@@ -567,10 +567,10 @@ module.exports= {
 
                 // step 1: get a gmaConnection to use:
                 function(next) {
-                    AD.log('... getting gmaConnection to use');
+                    sails.log.info('... getting gmaConnection to use');
                     GMA._authenticateProxy({ req: req})
                     .fail(function(err){
-                        AD.log.error(' failed to get connection!');
+                        ADCore.error.log(' failed to get connection!');
                         next(err);
                     })
                     .done(function(gma){
@@ -581,7 +581,7 @@ module.exports= {
 
                 // step 2: make the call!
                 function(next){
-                    AD.log('... calling gmaConnection.getGraphData()');
+                    sails.log.info('... calling gmaConnection.getGraphData()');
                     gmaConnection.getGraphData({
                         nodeId: nodeId,
                         measurements:measurements,
@@ -591,7 +591,7 @@ module.exports= {
 
                     })
                     .fail(function(err){
-                        AD.log.error(' failed getGraphData()');
+                        ADCore.error.log(' failed getGraphData()');
                         next(err);
                     })
                     .done(function(list){
